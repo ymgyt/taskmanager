@@ -1,0 +1,10 @@
+version: '3.7'
+services:
+  dynamodb:
+    build:
+      context: ./dev
+      dockerfile: DynamodbDockerfile
+    container_name: taskmanager_dynamodb
+    ports:
+      - 40001:8000
+

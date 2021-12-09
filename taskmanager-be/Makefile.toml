@@ -1,0 +1,7 @@
+[tasks.up]
+command = "docker-compose"
+args = ["up", "-d"]
+
+[tasks.down]
+command = "docker-compose"
+args = ["down"]
