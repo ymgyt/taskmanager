@@ -8,3 +8,13 @@ services:
     ports:
       - 40001:8000
 
+  postgres:
+   image: postgres:11.14-bullseye
+   container_name: taskmanager_postgres
+   environment:
+     POSTGRES_USER: taskmanager
+     POSTGRES_PASSWORD: secret
+     POSTGRES_DB: taskmanager
+   ports:
+     - 5432:5432
+
