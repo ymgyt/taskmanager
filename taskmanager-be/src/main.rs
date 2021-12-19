@@ -7,6 +7,7 @@ async fn main() -> Result<(), anyhow::Error> {
         .with_target(true)
         .init();
 
+    /*
     let signal = async {
         tokio::signal::ctrl_c()
             .await
@@ -17,4 +18,21 @@ async fn main() -> Result<(), anyhow::Error> {
     let addr = ([127, 0, 0, 1], 8001);
 
     server::run(addr, signal).await
+     */
+
+    db_handson().await
+}
+
+async fn db_handson() -> Result<(), anyhow::Error> {
+    use sea_orm::{Database,ConnectOptions};
+
+    let mut opt = ConnectOptions::new("postgresql://taskmanager:secret@localhost:5432/taskmanager".to_owned());
+
+    opt.sqlx_logging(true);
+
+    let db = Database::connect(opt).await?;
+
+    use taskmanager::db::entity::prelude::*;
+
+    Ok(())
 }

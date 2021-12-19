@@ -5,3 +5,26 @@ args = ["up", "-d"]
 [tasks.down]
 command = "docker-compose"
 args = ["down"]
+
+[tasks.migrate]
+command = "sqlx"
+args = ["migrate", "run"]
+install_crate = "sqlx-cli"
+
+[tasks.seaorm_generate_entity]
+dependencies = ["seaorm_generate_entity_expanded", "seaorm_generate_entity_compact"]
+
+[tasks.seaorm_generate_entity_expanded]
+command = "sea-orm-cli"
+install_crate = "sea-orm-cli"
+args = ["generate", "entity", "--database-schema=public",
+    "--output-dir=src/db/entity", "--expanded-format"]
+
+[tasks.seaorm_generate_entity_compact]
+command = "sea-orm-cli"
+args = ["generate", "entity", "--database-schema=public",
+    "--output-dir=src/db/entity/compact","--compact-format"]
+
+[tasks.db_login]
+command = "psql"
+args = ["--host=localhost", "--user=taskmaanager", "--password", "taskmanager"]

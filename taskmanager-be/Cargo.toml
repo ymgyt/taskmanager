@@ -10,6 +10,7 @@ async-graphql = "2.10.5"
 async-graphql-axum = "2.10.5"
 axum = { version = "0.3", features = ["http1", "http2", "json", "tower-log"] }
 anyhow = "*"
+sea-orm = { version = "^0", features = ["sqlx-postgres", "runtime-tokio-rustls", "macros", "debug-print"], default-features = false}
 tokio = { version = "1.14.0", features = ["rt", "rt-multi-thread", "macros", "net", "signal","sync", "test-util"] }
 tracing = "0.1.29"
 tracing-subscriber = { version = "0.3.2", features = ["time", "local-time", "env-filter"] }
