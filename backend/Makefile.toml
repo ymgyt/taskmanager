@@ -1,0 +1,11 @@
+[tasks.docker_build]
+command = "docker"
+args = ["build", "--tag", "taskmanager:${TM_VERSION}", "."]
+
+[tasks.echo]
+command = "echo"
+args = ["${TM_VERSION}"]
+
+[tasks.docker_run]
+command = "docker"
+args = ["run", "--publish=8001:8001", "--rm", "--name=taskmanager", "taskmanager:${TM_VERSION}"]

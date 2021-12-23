@@ -30,6 +30,10 @@ async fn graphql_playground() -> impl IntoResponse {
     response::Html(playground_source(GraphQLPlaygroundConfig::new("/graphql")))
 }
 
+async fn healthcheck() -> &'static str {
+    "OK"
+}
+
 pub async fn run(
     addr: impl Into<SocketAddr>,
     shutdown: impl Future<Output=()>,
@@ -52,6 +56,7 @@ pub async fn run_with_listener(
     let app = Router::new()
         .route("/graphql", post(graphql_handler))
         .route("/graphql/playground", get(graphql_playground))
+        .route("/healthcheck",get(healthcheck))
         .layer(
             tower::ServiceBuilder::new()
                 .layer(TraceLayer::new_for_http())
