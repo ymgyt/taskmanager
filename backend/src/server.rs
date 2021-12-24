@@ -59,7 +59,12 @@ pub async fn run_with_listener(
         .route("/healthcheck",get(healthcheck))
         .layer(
             tower::ServiceBuilder::new()
-                .layer(TraceLayer::new_for_http())
+                .layer(
+                   TraceLayer::new_for_http()
+                       .on_request(|request: &axum::http::Request<_>, _: &tracing::Span| {
+                           tracing::info!(?request);
+                       }),
+                )
                 .layer(AddExtensionLayer::new(schema))
         );
 
