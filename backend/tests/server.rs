@@ -1,6 +1,6 @@
 #[tokio::test]
 async fn server_test() -> Result<(), anyhow::Error> {
-    let addr = ("localhost:8002");
+    let addr = "localhost:8002";
     let listener = std::net::TcpListener::bind(addr).unwrap();
 
     let (tx, rx) = tokio::sync::oneshot::channel();
@@ -10,7 +10,7 @@ async fn server_test() -> Result<(), anyhow::Error> {
     }));
 
     assert_eq!(
-        reqwest::get("http://localhost:8002/healthz")
+        reqwest::get("http://localhost:8002/healthcheck")
             .await?
             .text()
             .await?,
@@ -18,7 +18,7 @@ async fn server_test() -> Result<(), anyhow::Error> {
     );
 
     tx.send(()).unwrap();
-    server_handle.await?;
+    server_handle.await??;
 
     Ok(())
 }

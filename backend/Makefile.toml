@@ -8,9 +8,47 @@ args = ["build", "--tag", "ymgyt/taskmanager:${TM_VERSION}", "."]
 
 [tasks.docker_push]
 command = "docker"
-args = ["image", "push", "ymgyt/taskmanager:${TM_VERSION}"]
+args = ["run", "--publish=8001:8001", "--rm", "--name=taskmanager", "taskmanager:${TM_VERSION}"]
+
+[tasks.docker_compose_up]
+command = "docker"
+args = ["compose", "up", "--detach"]
 
 [tasks.docker_flow]
 run_task = [
     { name = ["docker_build", "docker_push"] }
 ]
+
+[tasks.db_reset]
+run_task = [
+    { name = ["db_drop", "db_create", "db_migrate"]}
+]
+
+[tasks.db_drop]
+command = "sqlx"
+args = ["database", "drop"]
+
+[tasks.db_create]
+command = "sqlx"
+args = ["database", "create"]
+
+[tasks.db_migrate]
+command = "sqlx"
+args = ["migrate", "run"]
+
+[tasks.db_login]
+command = "psql"
+args = ["--port=5432", "--host=localhost", "--username=taskmanager", "--password", "taskmanager"]
+
+[tasks.generate_sea_orm_entity]
+command = "sea-orm-cli"
+args = ["generate", "entity", "--expanded-format", "--verbose", "--output-dir=src/db/orm"]
+
+[tasks.init]
+dependencies = [
+        "cargo_install",
+]
+
+[tasks.cargo_install]
+command = "cargo"
+args = ["install", "sea-orm-cli", "sqlx-cli"]

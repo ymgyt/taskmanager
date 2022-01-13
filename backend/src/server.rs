@@ -34,6 +34,12 @@ async fn healthcheck() -> &'static str {
     "OK"
 }
 
+async fn sdl(
+    schema: Extension<AppSchema>,
+) -> impl IntoResponse {
+    schema.sdl()
+}
+
 pub async fn run(
     addr: impl Into<SocketAddr>,
     shutdown: impl Future<Output=()>,
@@ -46,16 +52,32 @@ pub async fn run(
     run_with_listener(listener, shutdown).await
 }
 
+async fn connect_db() -> Result<sea_orm::DatabaseConnection, anyhow::Error> {
+    use sea_orm::{ConnectOptions,Database};
+
+    // TODO: pass from args( or dotenv)
+    let mut opt = ConnectOptions::new(std::env::var("DATABASE_URL").expect("environment variable DATABASE_URL required"));
+    opt.max_connections(20).sqlx_logging(true);
+
+    let db = Database::connect(opt).await?;
+
+    Ok(db)
+}
+
 pub async fn run_with_listener(
     listener: TcpListener,
     shutdown: impl Future<Output=()>,
 ) -> Result<(), anyhow::Error> {
+    let db_conn = connect_db().await?;
+
     let schema = AppSchema::build(QueryRoot, EmptyMutation, EmptySubscription)
+        .data(db_conn)
         .finish();
 
     let app = Router::new()
         .route("/graphql", post(graphql_handler))
         .route("/graphql/playground", get(graphql_playground))
+        .route("/graphql/sdl", get(sdl))
         .route("/healthcheck",get(healthcheck))
         .layer(
             tower::ServiceBuilder::new()
